@@ -1,557 +1,611 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solo Leveling</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: black;
-            color: white;
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow-x: hidden;
-        }
-        
-        .nav-buttons {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            z-index: 1000;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solo Leveling - RPG Habit Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        .nav-button {
-            background-color: rgba(0, 123, 255, 0.2);
-            color: white;
-            border: 2px solid #007bff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(145deg, #0f0f0f, #1a1a1a);
+      color: #ffffff;
+    }
 
-        .nav-button:hover {
-            background-color: #007bff;
-        }
+    .start-screen {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background: radial-gradient(circle, rgba(0,0,0,0.8), rgba(30,30,30,0.8));
+    }
 
-        .nav-button.active {
-            background-color: #007bff;
-        }
-        
-        .welcome-text {
-            font-size: 3em;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
+    .start-screen h1 {
+      font-size: 2.5rem;
+      color: #00ffc3;
+      margin-bottom: 1rem;
+    }
 
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #007bff;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            font-size: 2em;
-            text-align: center;
-        }
+    .start-screen input {
+      padding: 0.8rem 1.5rem;
+      border-radius: 10px;
+      border: none;
+      margin-top: 1rem;
+      font-size: 1.5rem;
+      background-color: #292929;
+      color: white;
+    }
 
-        .status-window {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            background-color: rgba(0, 0, 0, 0.9);
-            border: 2px solid #0066cc;
-            color: white;
-            padding: 20px;
-            z-index: 1000;
-            font-family: 'Arial', sans-serif;
-        }
+    .start-screen button {
+      padding: 1rem 3rem;
+      margin-top: 1rem;
+      font-size: 1.5rem;
+      background-color: #00ffc3;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0, 255, 195, 0.8);
+      transition: transform 0.3s;
+    }
 
-        .status-header {
-            text-align: center;
-            border-bottom: 2px solid #0066cc;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            color: #0066cc;
-        }
+    .start-screen button:hover {
+      transform: scale(1.1);
+    }
 
-        .status-content {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
+    header {
+      padding: 1rem;
+      background: linear-gradient(90deg, #2c3e50, #000000);
+      text-align: center;
+      font-size: 2rem;
+      color: #00ffc3;
+      border-bottom: 2px solid #00ffc3;
+    }
 
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .main {
+      display: none;
+      flex-direction: column;
+    }
 
-        .stat-icon {
-            width: 24px;
-            height: 24px;
-            background-color: #0066cc;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 1rem;
+      width: 100%;
+      padding: 2rem;
+    }
 
-        .stat-value {
-            color: #0066cc;
-            font-weight: bold;
-        }
+    .panel {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 0 20px rgba(0, 255, 195, 0.3);
+      height: 100%;
+    }
 
-        .popup.show, .status-window.show {
-            display: block;
-            animation: fadeIn 0.3s ease-in-out;
-        }
+    .stats h2, .quests h2, .rewards h2, .admin-panel h2 {
+      border-bottom: 1px solid #00ffc3;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
 
-        /* God page styles */
-        .status-card {
-            background-color: rgba(0, 0, 0, 0.9);
-            border: 2px solid #333;
-            border-radius: 10px;
-            width: 400px;
-            padding: 20px;
-            margin: 20px;
-            position: relative;
-        }
+    .stats {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 15px;
-        }
+    .quests, .rewards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
-        .profile-icon {
-            width: 60px;
-            height: 60px;
-            background-color: #333;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
-            color: white;
-        }
+    .quest-box, .reward-box {
+      background-color: #292929;
+      border: 2px solid #00ffc3;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 0 15px rgba(0, 255, 195, 0.3);
+      transition: transform 0.3s;
+    }
 
-        .profile-info h1 {
-            margin: 0;
-            font-size: 1.5em;
-        }
+    .quest-box:hover, .reward-box:hover {
+      transform: scale(1.02);
+    }
 
-        .profile-info .level {
-            font-size: 2em;
-            margin: 5px 0;
-        }
+    .quest-box h3, .reward-box h3 {
+      margin-top: 0;
+      color: #00ffc3;
+    }
 
-        .profile-info .role {
-            color: #4CAF50;
-            font-size: 0.9em;
-        }
+    .quest-actions, .reward-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
 
-        .experience-bar {
-            background-color: #333;
-            height: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            position: relative;
-            overflow: hidden;
-        }
+    .quest-box button, .reward-box button, .admin-panel button {
+      background-color: #00ffc3;
+      color: #000;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
 
-        .experience-progress {
-            background-color: #666;
-            width: 60%;
-            height: 100%;
-            border-radius: 10px;
-            transition: width 0.3s ease;
-        }
+    .quest-box button:hover, .reward-box button:hover, .admin-panel button:hover {
+      background-color: #00e6b0;
+      box-shadow: 0 0 10px rgba(0, 255, 195, 0.8);
+    }
 
-        .experience-text {
-            font-size: 0.8em;
-            color: #888;
-            margin-bottom: 10px;
-        }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #111;
+      padding: 2rem;
+      border: 2px solid #00ffc3;
+      border-radius: 15px;
+      color: #fff;
+      z-index: 1000;
+      box-shadow: 0 0 30px rgba(0, 255, 195, 0.8);
+      text-align: center;
+      width: 80%;
+      max-width: 400px;
+    }
 
-        .skills-section {
-            margin-top: 20px;
-        }
+    .popup.show {
+      display: block;
+    }
 
-        .skill-points {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: #4CAF50;
-        }
+    .popup h2 {
+      color: #00ffc3;
+      margin-top: 0;
+    }
 
-        .skill-item {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-            gap: 10px;
-        }
+    .popup button {
+      margin-top: 1rem;
+      padding: 0.5rem 1.5rem;
+    }
 
-        .skill-bar {
-            flex-grow: 1;
-            height: 20px;
-            background-color: #333;
-            border-radius: 5px;
-            position: relative;
-            overflow: hidden;
-        }
+    .form-group {
+      margin-bottom: 1rem;
+    }
 
-        .skill-progress {
-            height: 100%;
-            border-radius: 5px;
-            transition: width 0.3s ease;
-        }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #00ffc3;
+    }
 
-        .html-progress { background-color: #00BCD4; width: 25%; }
-        .css-progress { background-color: #FF5722; width: 35%; }
-        .js-progress { background-color: #FFEB3B; width: 55%; }
-        .react-progress { background-color: #00BCD4; width: 45%; }
-        .angular-progress { background-color: #F44336; width: 5%; }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #333;
+      background-color: #292929;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+    }
 
-        .skill-level {
-            margin-left: 10px;
-            min-width: 30px;
-            color: #4CAF50;
-        }
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
 
-        .skill-add {
-            background-color: #333;
-            color: white;
-            border: none;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2em;
-            line-height: 1;
-            transition: all 0.3s ease;
-        }
+    .hidden {
+      display: none;
+    }
 
-        .skill-add:hover {
-            background-color: #4CAF50;
-        }
+    #questContainer, #rewardList {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
 
-        .unassigned-points {
-            color: #4CAF50;
-            font-size: 0.9em;
-            margin-top: 20px;
-            text-align: center;
-        }
+    .empty-message {
+      color: #666;
+      font-style: italic;
+    }
 
-        .navigation-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 10px;
-            display: flex;
-            justify-content: space-around;
-            border-top: 1px solid #333;
-        }
+    .completed {
+      border-color: #00ff00;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+    }
 
-        .nav-item {
-            color: #666;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.8em;
-            transition: color 0.3s ease;
-        }
-
-        .nav-item:hover {
-            color: #4CAF50;
-        }
-
-        .page {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
-        }
-
-        .page.active {
-            display: flex !important;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translate(-50%, -60%); }
-            to { opacity: 1; transform: translate(-50%, -50%); }
-        }
-
-        .corner-decorations::before,
-        .corner-decorations::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #0066cc;
-        }
-
-        .corner-decorations::before {
-            top: -2px;
-            left: -2px;
-            border-right: none;
-            border-bottom: none;
-        }
-
-        .corner-decorations::after {
-            bottom: -2px;
-            right: -2px;
-            border-left: none;
-            border-top: none;
-        }
-    </style>
+    .failed {
+      border-color: #ff0000;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    }
+  </style>
 </head>
+
 <body>
-    <div class="nav-buttons">
-        <button onclick="showPage('main')" class="nav-button" id="mainButton">Main Page</button>
-        <button onclick="showPage('god')" class="nav-button" id="godButton">God Page</button>
+  <div class="start-screen" id="startScreen">
+    <h1>Enter Your Name to Begin</h1>
+    <input type="text" id="playerNameInput" placeholder="Enter your name...">
+    <button onclick="startGame()">Start</button>
+  </div>
+
+  <div class="main" id="mainInterface">
+    <header>Solo Leveling - RPG Habit Tracker</header>
+
+    <div class="container">
+      <!-- Stats Panel -->
+      <div class="panel stats">
+        <h2>Stats</h2>
+        <p><strong>Name:</strong> <span id="playerName">-</span></p>
+        <p><strong>Level:</strong> <span id="level">1</span></p>
+        <p><strong>Rank:</strong> <span id="rank">E</span></p>
+        <p><strong>Total EXP:</strong> <span id="totalExp">0</span></p>
+      </div>
+
+      <!-- Quests Panel -->
+      <div class="panel quests">
+        <h2>Quests</h2>
+        <div id="questContainer">
+          <p class="empty-message">No quests available. Create some in Admin Access.</p>
+        </div>
+      </div>
+
+      <!-- Rewards Panel -->
+      <div class="panel rewards">
+        <h2>Rewards</h2>
+        <div id="rewardList">
+          <p class="empty-message">No rewards available. Create some in Admin Access.</p>
+        </div>
+      </div>
     </div>
 
-    <!-- Main Page Content -->
-    <div id="mainPage" class="page active">
-        <div class="welcome-text">
-            Welcome to the Solo Leveling
-        </div>
-        <div class="popup" id="kawaiPopup">
-            kawai
-        </div>
-        <div class="status-window corner-decorations" id="statusWindow">
-            <div class="status-header">STATUS</div>
-            <div class="status-content">
-                <div class="stat-item">
-                    <div class="stat-icon">S</div>
-                    <span>Strength</span>
-                    <span class="stat-value">27</span>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">A</div>
-                    <span>Agility</span>
-                    <span class="stat-value">23</span>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">V</div>
-                    <span>Vitality</span>
-                    <span class="stat-value">25</span>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon">I</div>
-                    <span>Intelligence</span>
-                    <span class="stat-value">22</span>
-                </div>
-            </div>
-        </div>
+    <!-- Admin Access Panel -->
+    <div class="panel admin-panel">
+      <h2>Admin Access</h2>
+      <div class="admin-actions">
+        <button onclick="showQuestCreation()">Create Quest</button>
+        <button onclick="showRewardCreation()">Create Reward</button>
+      </div>
     </div>
+  </div>
 
-    <!-- God Page Content -->
-    <div id="godPage" class="page">
-        <div class="status-card">
-            <div class="profile-header">
-                <div class="profile-icon">A</div>
-                <div class="profile-info">
-                    <h1>Adrian Twarog</h1>
-                    <div class="level">Level 2</div>
-                    <div class="role">Full stack programmer</div>
-                </div>
-            </div>
-
-            <div class="experience-text">Experience: 340 Next Level: 580</div>
-            <div class="experience-bar">
-                <div class="experience-progress"></div>
-            </div>
-
-            <div class="skills-section">
-                <div class="skill-points">Skills Points: 49</div>
-                
-                <div class="skill-item">
-                    <span>HTML</span>
-                    <div class="skill-bar">
-                        <div class="skill-progress html-progress"></div>
-                    </div>
-                    <span class="skill-level">5</span>
-                    <button class="skill-add">+</button>
-                </div>
-
-                <div class="skill-item">
-                    <span>CSS</span>
-                    <div class="skill-bar">
-                        <div class="skill-progress css-progress"></div>
-                    </div>
-                    <span class="skill-level">7</span>
-                    <button class="skill-add">+</button>
-                </div>
-
-                <div class="skill-item">
-                    <span>JS</span>
-                    <div class="skill-bar">
-                        <div class="skill-progress js-progress"></div>
-                    </div>
-                    <span class="skill-level">22</span>
-                    <button class="skill-add">+</button>
-                </div>
-
-                <div class="skill-item">
-                    <span>React</span>
-                    <div class="skill-bar">
-                        <div class="skill-progress react-progress"></div>
-                    </div>
-                    <span class="skill-level">15</span>
-                    <button class="skill-add">+</button>
-                </div>
-
-                <div class="skill-item">
-                    <span>Angular</span>
-                    <div class="skill-bar">
-                        <div class="skill-progress angular-progress"></div>
-                    </div>
-                    <span class="skill-level">0</span>
-                    <button class="skill-add">+</button>
-                </div>
-            </div>
-
-            <div class="unassigned-points">Unassigned Points: 8</div>
-        </div>
-
-        <div class="navigation-bar">
-            <a href="#" class="nav-item">Status</a>
-            <a href="#" class="nav-item">Skills</a>
-            <a href="#" class="nav-item">Exp</a>
-        </div>
+  <!-- Quest Creation Popup -->
+  <div class="popup" id="questCreationPopup">
+    <h2>Create New Quest</h2>
+    <div class="form-group">
+      <label for="questName">Quest Name:</label>
+      <input type="text" id="questName" placeholder="Enter quest name...">
     </div>
+    <div class="form-group">
+      <label for="questExp">EXP Reward:</label>
+      <input type="number" id="questExp" placeholder="Enter EXP amount..." min="1">
+    </div>
+    <div class="form-group">
+      <label for="questPunishment">Punishment (if failed):</label>
+      <textarea id="questPunishment" placeholder="Describe the punishment..."></textarea>
+    </div>
+    <button onclick="createQuest()">Create Quest</button>
+    <button onclick="closeQuestCreation()">Cancel</button>
+  </div>
 
-    <script>
-        // Page switching functionality
-        function showPage(page) {
-            console.log('Switching to page:', page);  // Debug log
-            
-            // Hide all pages first
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(p => {
-                p.style.display = 'none';
-                p.classList.remove('active');
-            });
-            
-            // Remove active class from all buttons
-            document.querySelectorAll('.nav-button').forEach(b => {
-                b.classList.remove('active');
-            });
-            
-            // Show the selected page
-            const targetPage = (page === 'main') ? 'mainPage' : 'godPage';
-            const targetButton = (page === 'main') ? 'mainButton' : 'godButton';
-            
-            const pageElement = document.getElementById(targetPage);
-            const buttonElement = document.getElementById(targetButton);
-            
-            if (pageElement && buttonElement) {
-                pageElement.style.display = 'flex';
-                pageElement.classList.add('active');
-                buttonElement.classList.add('active');
-                console.log('Page displayed:', targetPage);  // Debug log
-            } else {
-                console.error('Page or button not found:', targetPage, targetButton);  // Debug log
-            }
+  <!-- Reward Creation Popup -->
+  <div class="popup" id="rewardCreationPopup">
+    <h2>Create New Reward</h2>
+    <div class="form-group">
+      <label for="rewardName">Reward Name:</label>
+      <input type="text" id="rewardName" placeholder="Enter reward name...">
+    </div>
+    <div class="form-group">
+      <label for="rewardCost">EXP Cost:</label>
+      <input type="number" id="rewardCost" placeholder="Enter EXP cost..." min="1">
+    </div>
+    <button onclick="createReward()">Create Reward</button>
+    <button onclick="closeRewardCreation()">Cancel</button>
+  </div>
+
+  <!-- Punishment Popup -->
+  <div class="popup" id="punishmentPopup">
+    <h2>Quest Failed!</h2>
+    <p id="punishmentText"></p>
+    <button onclick="closePunishmentPopup()">I Accept My Failure</button>
+  </div>
+
+  <!-- Notification Popup -->
+  <div class="popup" id="notificationPopup">
+    <h2 id="notificationTitle">Notification</h2>
+    <p id="notificationMessage"></p>
+    <button onclick="closeNotification()">OK</button>
+  </div>
+
+  <script>
+    // Game State
+    let player = {
+      name: '',
+      level: 1,
+      exp: 0,
+      rank: 'E',
+      quests: [],
+      rewards: []
+    };
+
+    // DOM Elements
+    const startScreen = document.getElementById('startScreen');
+    const mainInterface = document.getElementById('mainInterface');
+    const playerNameInput = document.getElementById('playerNameInput');
+    const playerNameDisplay = document.getElementById('playerName');
+    const levelDisplay = document.getElementById('level');
+    const rankDisplay = document.getElementById('rank');
+    const totalExpDisplay = document.getElementById('totalExp');
+    const questContainer = document.getElementById('questContainer');
+    const rewardList = document.getElementById('rewardList');
+
+    // Popups
+    const questCreationPopup = document.getElementById('questCreationPopup');
+    const rewardCreationPopup = document.getElementById('rewardCreationPopup');
+    const punishmentPopup = document.getElementById('punishmentPopup');
+    const notificationPopup = document.getElementById('notificationPopup');
+
+    // Start the game
+    function startGame() {
+      const name = playerNameInput.value.trim();
+      if (!name) return;
+      
+      player.name = name;
+      playerNameDisplay.textContent = name;
+      startScreen.style.display = "none";
+      mainInterface.style.display = "flex";
+      
+      // Load any saved data
+      loadGame();
+      
+      // Update displays
+      updateStats();
+      renderQuests();
+      renderRewards();
+    }
+
+    // Save game state to localStorage
+    function saveGame() {
+      localStorage.setItem('rpgHabitTracker', JSON.stringify(player));
+    }
+
+    // Load game state from localStorage
+    function loadGame() {
+      const savedGame = localStorage.getItem('rpgHabitTracker');
+      if (savedGame) {
+        player = JSON.parse(savedGame);
+        // Ensure arrays exist
+        player.quests = player.quests || [];
+        player.rewards = player.rewards || [];
+      }
+    }
+
+    // Update stats display
+    function updateStats() {
+      levelDisplay.textContent = player.level;
+      rankDisplay.textContent = player.rank;
+      totalExpDisplay.textContent = player.exp;
+      
+      // Simple leveling system (1000 exp per level)
+      const newLevel = Math.floor(player.exp / 1000) + 1;
+      if (newLevel > player.level) {
+        player.level = newLevel;
+        showNotification('Level Up!', `Congratulations! You've reached level ${player.level}!`);
+      }
+      
+      // Simple rank system
+      const ranks = ['E', 'D', 'C', 'B', 'A', 'S'];
+      const rankIndex = Math.min(Math.floor(player.level / 5), ranks.length - 1);
+      player.rank = ranks[rankIndex];
+      
+      saveGame();
+    }
+
+    // Show quest creation popup
+    function showQuestCreation() {
+      document.getElementById('questName').value = '';
+      document.getElementById('questExp').value = '';
+      document.getElementById('questPunishment').value = '';
+      questCreationPopup.classList.add('show');
+    }
+
+    // Close quest creation popup
+    function closeQuestCreation() {
+      questCreationPopup.classList.remove('show');
+    }
+
+    // Create a new quest
+    function createQuest() {
+      const name = document.getElementById('questName').value.trim();
+      const exp = parseInt(document.getElementById('questExp').value);
+      const punishment = document.getElementById('questPunishment').value.trim();
+      
+      if (!name || isNaN(exp) || exp < 1 || !punishment) {
+        showNotification('Error', 'Please fill all fields with valid values.');
+        return;
+      }
+      
+      const newQuest = {
+        id: Date.now(),
+        name,
+        exp,
+        punishment
+      };
+      
+      player.quests.push(newQuest);
+      closeQuestCreation();
+      renderQuests();
+      saveGame();
+      showNotification('Quest Created', `"${name}" has been added to your quests!`);
+    }
+
+    // Show reward creation popup
+    function showRewardCreation() {
+      document.getElementById('rewardName').value = '';
+      document.getElementById('rewardCost').value = '';
+      rewardCreationPopup.classList.add('show');
+    }
+
+    // Close reward creation popup
+    function closeRewardCreation() {
+      rewardCreationPopup.classList.remove('show');
+    }
+
+    // Create a new reward
+    function createReward() {
+      const name = document.getElementById('rewardName').value.trim();
+      const cost = parseInt(document.getElementById('rewardCost').value);
+      
+      if (!name || isNaN(cost) || cost < 1) {
+        showNotification('Error', 'Please fill all fields with valid values.');
+        return;
+      }
+      
+      const newReward = {
+        id: Date.now(),
+        name,
+        cost
+      };
+      
+      player.rewards.push(newReward);
+      closeRewardCreation();
+      renderRewards();
+      saveGame();
+      showNotification('Reward Created', `"${name}" has been added to your rewards!`);
+    }
+
+    // Render all quests
+    function renderQuests() {
+      if (player.quests.length === 0) {
+        questContainer.innerHTML = '<p class="empty-message">No quests available. Create some in Admin Access.</p>';
+        return;
+      }
+      
+      questContainer.innerHTML = '';
+      player.quests.forEach(quest => {
+        const questElement = document.createElement('div');
+        questElement.className = 'quest-box';
+        questElement.innerHTML = `
+          <h3>${quest.name}</h3>
+          <p>EXP: ${quest.exp}</p>
+          <div class="quest-actions">
+            <button onclick="completeQuest(${quest.id})">Completed</button>
+            <button onclick="failQuest(${quest.id})">Failed</button>
+          </div>
+        `;
+        questContainer.appendChild(questElement);
+      });
+    }
+
+    // Render all rewards
+    function renderRewards() {
+      if (player.rewards.length === 0) {
+        rewardList.innerHTML = '<p class="empty-message">No rewards available. Create some in Admin Access.</p>';
+        return;
+      }
+      
+      rewardList.innerHTML = '';
+      player.rewards.forEach(reward => {
+        const rewardElement = document.createElement('div');
+        rewardElement.className = 'reward-box';
+        rewardElement.innerHTML = `
+          <h3>${reward.name}</h3>
+          <p>Cost: ${reward.cost} EXP</p>
+          <div class="reward-actions">
+            <button onclick="claimReward(${reward.id})" ${player.exp < reward.cost ? 'disabled' : ''}>Claim Reward</button>
+          </div>
+        `;
+        rewardList.appendChild(rewardElement);
+      });
+    }
+
+    // Complete a quest
+    function completeQuest(questId) {
+      const questIndex = player.quests.findIndex(q => q.id === questId);
+      if (questIndex === -1) return;
+      
+      const quest = player.quests[questIndex];
+      player.exp += quest.exp;
+      player.quests.splice(questIndex, 1);
+      
+      updateStats();
+      renderQuests();
+      showNotification('Quest Completed!', `You earned ${quest.exp} EXP for completing "${quest.name}"!`);
+    }
+
+    // Fail a quest
+    function failQuest(questId) {
+      const questIndex = player.quests.findIndex(q => q.id === questId);
+      if (questIndex === -1) return;
+      
+      const quest = player.quests[questIndex];
+      document.getElementById('punishmentText').textContent = quest.punishment;
+      player.quests.splice(questIndex, 1);
+      
+      punishmentPopup.classList.add('show');
+      renderQuests();
+    }
+
+    // Close punishment popup
+    function closePunishmentPopup() {
+      punishmentPopup.classList.remove('show');
+    }
+
+    // Claim a reward
+    function claimReward(rewardId) {
+      const rewardIndex = player.rewards.findIndex(r => r.id === rewardId);
+      if (rewardIndex === -1) return;
+      
+      const reward = player.rewards[rewardIndex];
+      
+      if (player.exp < reward.cost) {
+        showNotification('Not Enough EXP', `You need ${reward.cost - player.exp} more EXP to claim this reward.`);
+        return;
+      }
+      
+      player.exp -= reward.cost;
+      player.rewards.splice(rewardIndex, 1);
+      
+      updateStats();
+      renderRewards();
+      showNotification('Reward Claimed!', `You've claimed "${reward.name}" for ${reward.cost} EXP!`);
+    }
+
+    // Show notification
+    function showNotification(title, message) {
+      document.getElementById('notificationTitle').textContent = title;
+      document.getElementById('notificationMessage').textContent = message;
+      notificationPopup.classList.add('show');
+    }
+
+    // Close notification
+    function closeNotification() {
+      notificationPopup.classList.remove('show');
+    }
+
+    // Initialize the game
+    window.onload = function() {
+      // Check for saved game
+      if (localStorage.getItem('rpgHabitTracker')) {
+        const savedGame = JSON.parse(localStorage.getItem('rpgHabitTracker'));
+        if (savedGame.name) {
+          playerNameInput.value = savedGame.name;
         }
-
-        // Skill upgrade functionality
-        let unassignedPoints = 8;
-        
-        function updateUnassignedPoints() {
-            document.querySelector('.unassigned-points').textContent = `Unassigned Points: ${unassignedPoints}`;
-        }
-
-        function updateSkillLevel(button) {
-            if (unassignedPoints > 0) {
-                const levelElement = button.previousElementSibling;
-                const currentLevel = parseInt(levelElement.textContent);
-                levelElement.textContent = currentLevel + 1;
-                
-                const progressBar = button.parentElement.querySelector('.skill-progress');
-                const newWidth = (currentLevel + 1) * 5; // Each level is 5% of the bar
-                progressBar.style.width = newWidth + '%';
-                
-                unassignedPoints--;
-                updateUnassignedPoints();
-            } else {
-                alert('No unassigned points left!');
-            }
-        }
-
-        // Initialize when DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded');  // Debug log
-            showPage('main');
-            
-            // Add click handlers to navigation buttons
-            document.getElementById('mainButton').addEventListener('click', () => showPage('main'));
-            document.getElementById('godButton').addEventListener('click', () => showPage('god'));
-            
-            // Add click handlers to all skill add buttons
-            document.querySelectorAll('.skill-add').forEach(button => {
-                button.addEventListener('click', () => updateSkillLevel(button));
-            });
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // For kawai popup (Ctrl + B)
-            if ((e.key === 'b' || e.key === 'B') && e.ctrlKey) {
-                e.preventDefault();
-                const popup = document.getElementById('kawaiPopup');
-                popup.classList.add('show');
-                
-                setTimeout(() => {
-                    popup.classList.remove('show');
-                }, 3000);
-            }
-            
-            // For status window (Ctrl + L)
-            if ((e.key === 'l' || e.key === 'L') && e.ctrlKey) {
-                e.preventDefault();
-                const statusWindow = document.getElementById('statusWindow');
-                statusWindow.classList.add('show');
-                
-                setTimeout(() => {
-                    statusWindow.classList.remove('show');
-                }, 5000);
-            }
-
-            // For navigation to god page (Ctrl + K)
-            if ((e.key === 'k' || e.key === 'K') && e.ctrlKey) {
-                e.preventDefault();
-                showPage('god');
-            }
-        });
-    </script>
+      }
+    };
+  </script>
 </body>
+
 </html> 
