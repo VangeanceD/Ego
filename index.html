@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The God - Programmer Status</title>
+    <title>Solo Leveling</title>
     <style>
         body {
             margin: 0;
@@ -11,18 +11,21 @@
             background-color: black;
             color: white;
             font-family: Arial, sans-serif;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+            overflow-x: hidden;
         }
-
+        
         .nav-buttons {
             position: fixed;
             top: 20px;
             right: 20px;
             display: flex;
             gap: 10px;
+            z-index: 1000;
         }
 
         .nav-button {
@@ -43,13 +46,94 @@
         .nav-button.active {
             background-color: #007bff;
         }
+        
+        .welcome-text {
+            font-size: 3em;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
 
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .status-window {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 2px solid #0066cc;
+            color: white;
+            padding: 20px;
+            z-index: 1000;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .status-header {
+            text-align: center;
+            border-bottom: 2px solid #0066cc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            color: #0066cc;
+        }
+
+        .status-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #0066cc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-value {
+            color: #0066cc;
+            font-weight: bold;
+        }
+
+        .popup.show, .status-window.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        /* God page styles */
         .status-card {
             background-color: rgba(0, 0, 0, 0.9);
             border: 2px solid #333;
             border-radius: 10px;
             width: 400px;
             padding: 20px;
+            margin: 20px;
+            position: relative;
         }
 
         .profile-header {
@@ -92,6 +176,7 @@
             border-radius: 10px;
             margin: 20px 0;
             position: relative;
+            overflow: hidden;
         }
 
         .experience-progress {
@@ -99,6 +184,7 @@
             width: 60%;
             height: 100%;
             border-radius: 10px;
+            transition: width 0.3s ease;
         }
 
         .experience-text {
@@ -114,6 +200,7 @@
         .skill-points {
             font-size: 1.2em;
             margin-bottom: 15px;
+            color: #4CAF50;
         }
 
         .skill-item {
@@ -129,11 +216,13 @@
             background-color: #333;
             border-radius: 5px;
             position: relative;
+            overflow: hidden;
         }
 
         .skill-progress {
             height: 100%;
             border-radius: 5px;
+            transition: width 0.3s ease;
         }
 
         .html-progress { background-color: #00BCD4; width: 25%; }
@@ -145,6 +234,7 @@
         .skill-level {
             margin-left: 10px;
             min-width: 30px;
+            color: #4CAF50;
         }
 
         .skill-add {
@@ -157,12 +247,18 @@
             cursor: pointer;
             font-size: 1.2em;
             line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .skill-add:hover {
+            background-color: #4CAF50;
         }
 
         .unassigned-points {
-            color: #888;
+            color: #4CAF50;
             font-size: 0.9em;
             margin-top: 20px;
+            text-align: center;
         }
 
         .navigation-bar {
@@ -174,6 +270,7 @@
             padding: 10px;
             display: flex;
             justify-content: space-around;
+            border-top: 1px solid #333;
         }
 
         .nav-item {
@@ -183,86 +280,278 @@
             flex-direction: column;
             align-items: center;
             font-size: 0.8em;
+            transition: color 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: #4CAF50;
+        }
+
+        .page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .page.active {
+            display: flex !important;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .corner-decorations::before,
+        .corner-decorations::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #0066cc;
+        }
+
+        .corner-decorations::before {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decorations::after {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
         }
     </style>
 </head>
 <body>
     <div class="nav-buttons">
-        <a href="index.html" class="nav-button">Main Page</a>
-        <a href="god.html" class="nav-button active">God Page</a>
+        <button onclick="showPage('main')" class="nav-button" id="mainButton">Main Page</button>
+        <button onclick="showPage('god')" class="nav-button" id="godButton">God Page</button>
     </div>
 
-    <div class="status-card">
-        <div class="profile-header">
-            <div class="profile-icon">A</div>
-            <div class="profile-info">
-                <h1>Adrian Twarog</h1>
-                <div class="level">Level 2</div>
-                <div class="role">Full stack programmer</div>
+    <!-- Main Page Content -->
+    <div id="mainPage" class="page active">
+        <div class="welcome-text">
+            Welcome to the Solo Leveling
+        </div>
+        <div class="popup" id="kawaiPopup">
+            kawai
+        </div>
+        <div class="status-window corner-decorations" id="statusWindow">
+            <div class="status-header">STATUS</div>
+            <div class="status-content">
+                <div class="stat-item">
+                    <div class="stat-icon">S</div>
+                    <span>Strength</span>
+                    <span class="stat-value">27</span>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">A</div>
+                    <span>Agility</span>
+                    <span class="stat-value">23</span>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">V</div>
+                    <span>Vitality</span>
+                    <span class="stat-value">25</span>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon">I</div>
+                    <span>Intelligence</span>
+                    <span class="stat-value">22</span>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="experience-text">Experience: 340 Next Level: 580</div>
-        <div class="experience-bar">
-            <div class="experience-progress"></div>
+    <!-- God Page Content -->
+    <div id="godPage" class="page">
+        <div class="status-card">
+            <div class="profile-header">
+                <div class="profile-icon">A</div>
+                <div class="profile-info">
+                    <h1>Adrian Twarog</h1>
+                    <div class="level">Level 2</div>
+                    <div class="role">Full stack programmer</div>
+                </div>
+            </div>
+
+            <div class="experience-text">Experience: 340 Next Level: 580</div>
+            <div class="experience-bar">
+                <div class="experience-progress"></div>
+            </div>
+
+            <div class="skills-section">
+                <div class="skill-points">Skills Points: 49</div>
+                
+                <div class="skill-item">
+                    <span>HTML</span>
+                    <div class="skill-bar">
+                        <div class="skill-progress html-progress"></div>
+                    </div>
+                    <span class="skill-level">5</span>
+                    <button class="skill-add">+</button>
+                </div>
+
+                <div class="skill-item">
+                    <span>CSS</span>
+                    <div class="skill-bar">
+                        <div class="skill-progress css-progress"></div>
+                    </div>
+                    <span class="skill-level">7</span>
+                    <button class="skill-add">+</button>
+                </div>
+
+                <div class="skill-item">
+                    <span>JS</span>
+                    <div class="skill-bar">
+                        <div class="skill-progress js-progress"></div>
+                    </div>
+                    <span class="skill-level">22</span>
+                    <button class="skill-add">+</button>
+                </div>
+
+                <div class="skill-item">
+                    <span>React</span>
+                    <div class="skill-bar">
+                        <div class="skill-progress react-progress"></div>
+                    </div>
+                    <span class="skill-level">15</span>
+                    <button class="skill-add">+</button>
+                </div>
+
+                <div class="skill-item">
+                    <span>Angular</span>
+                    <div class="skill-bar">
+                        <div class="skill-progress angular-progress"></div>
+                    </div>
+                    <span class="skill-level">0</span>
+                    <button class="skill-add">+</button>
+                </div>
+            </div>
+
+            <div class="unassigned-points">Unassigned Points: 8</div>
         </div>
 
-        <div class="skills-section">
-            <div class="skill-points">Skills Points: 49</div>
+        <div class="navigation-bar">
+            <a href="#" class="nav-item">Status</a>
+            <a href="#" class="nav-item">Skills</a>
+            <a href="#" class="nav-item">Exp</a>
+        </div>
+    </div>
+
+    <script>
+        // Page switching functionality
+        function showPage(page) {
+            console.log('Switching to page:', page);  // Debug log
             
-            <div class="skill-item">
-                <span>HTML</span>
-                <div class="skill-bar">
-                    <div class="skill-progress html-progress"></div>
-                </div>
-                <span class="skill-level">5</span>
-                <button class="skill-add">+</button>
-            </div>
+            // Hide all pages first
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(p => {
+                p.style.display = 'none';
+                p.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.nav-button').forEach(b => {
+                b.classList.remove('active');
+            });
+            
+            // Show the selected page
+            const targetPage = (page === 'main') ? 'mainPage' : 'godPage';
+            const targetButton = (page === 'main') ? 'mainButton' : 'godButton';
+            
+            const pageElement = document.getElementById(targetPage);
+            const buttonElement = document.getElementById(targetButton);
+            
+            if (pageElement && buttonElement) {
+                pageElement.style.display = 'flex';
+                pageElement.classList.add('active');
+                buttonElement.classList.add('active');
+                console.log('Page displayed:', targetPage);  // Debug log
+            } else {
+                console.error('Page or button not found:', targetPage, targetButton);  // Debug log
+            }
+        }
 
-            <div class="skill-item">
-                <span>CSS</span>
-                <div class="skill-bar">
-                    <div class="skill-progress css-progress"></div>
-                </div>
-                <span class="skill-level">7</span>
-                <button class="skill-add">+</button>
-            </div>
+        // Skill upgrade functionality
+        let unassignedPoints = 8;
+        
+        function updateUnassignedPoints() {
+            document.querySelector('.unassigned-points').textContent = `Unassigned Points: ${unassignedPoints}`;
+        }
 
-            <div class="skill-item">
-                <span>JS</span>
-                <div class="skill-bar">
-                    <div class="skill-progress js-progress"></div>
-                </div>
-                <span class="skill-level">22</span>
-                <button class="skill-add">+</button>
-            </div>
+        function updateSkillLevel(button) {
+            if (unassignedPoints > 0) {
+                const levelElement = button.previousElementSibling;
+                const currentLevel = parseInt(levelElement.textContent);
+                levelElement.textContent = currentLevel + 1;
+                
+                const progressBar = button.parentElement.querySelector('.skill-progress');
+                const newWidth = (currentLevel + 1) * 5; // Each level is 5% of the bar
+                progressBar.style.width = newWidth + '%';
+                
+                unassignedPoints--;
+                updateUnassignedPoints();
+            } else {
+                alert('No unassigned points left!');
+            }
+        }
 
-            <div class="skill-item">
-                <span>React</span>
-                <div class="skill-bar">
-                    <div class="skill-progress react-progress"></div>
-                </div>
-                <span class="skill-level">15</span>
-                <button class="skill-add">+</button>
-            </div>
+        // Initialize when DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded');  // Debug log
+            showPage('main');
+            
+            // Add click handlers to navigation buttons
+            document.getElementById('mainButton').addEventListener('click', () => showPage('main'));
+            document.getElementById('godButton').addEventListener('click', () => showPage('god'));
+            
+            // Add click handlers to all skill add buttons
+            document.querySelectorAll('.skill-add').forEach(button => {
+                button.addEventListener('click', () => updateSkillLevel(button));
+            });
+        });
 
-            <div class="skill-item">
-                <span>Angular</span>
-                <div class="skill-bar">
-                    <div class="skill-progress angular-progress"></div>
-                </div>
-                <span class="skill-level">0</span>
-                <button class="skill-add">+</button>
-            </div>
-        </div>
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // For kawai popup (Ctrl + B)
+            if ((e.key === 'b' || e.key === 'B') && e.ctrlKey) {
+                e.preventDefault();
+                const popup = document.getElementById('kawaiPopup');
+                popup.classList.add('show');
+                
+                setTimeout(() => {
+                    popup.classList.remove('show');
+                }, 3000);
+            }
+            
+            // For status window (Ctrl + L)
+            if ((e.key === 'l' || e.key === 'L') && e.ctrlKey) {
+                e.preventDefault();
+                const statusWindow = document.getElementById('statusWindow');
+                statusWindow.classList.add('show');
+                
+                setTimeout(() => {
+                    statusWindow.classList.remove('show');
+                }, 5000);
+            }
 
-        <div class="unassigned-points">Unassigned Points: 8</div>
-    </div>
-
-    <div class="navigation-bar">
-        <a href="#" class="nav-item">Status</a>
-        <a href="#" class="nav-item">Skills</a>
-        <a href="#" class="nav-item">Exp</a>
-    </div>
+            // For navigation to god page (Ctrl + K)
+            if ((e.key === 'k' || e.key === 'K') && e.ctrlKey) {
+                e.preventDefault();
+                showPage('god');
+            }
+        });
+    </script>
 </body>
 </html> 
